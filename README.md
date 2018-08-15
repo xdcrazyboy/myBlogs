@@ -1,4 +1,4 @@
-# myBlogs
+# Java面试之路
 没有什么顺序，纯粹是给自己做的一个笔记，大部分是在巨人肩膀上汇总。
 ### 参考文章
 参考了很多大牛的文章或者书，需要放在最显眼的位置。
@@ -319,13 +319,16 @@ ArrayList实现了List接口,它是以**数组的方式来**实现的,数组的�
 
 > 由此可见第三种方法是最方便，最简洁的!
 
-**与Vector比较**：ArrayList方法不是同步的，线程不安全，而Vector是同步的，线程安全，不过会在同步操作上耗费大量时间。
+**与Vector比较**：
+
+   * ArrayList方法不是同步的，线程不安全，而Vector是同步的，线程安全，不过会在同步(在每个方法上面加了一个synchronized关键字来保证)操作上耗费大量时间。
+   * 数组扩容的时候，Vector是*2，ArrayList是*1.5+1；
 
 ### LinkedList
 1. 采用链表的方式来实现List接口的,它本身有自己特定的方法，如: addFirst(),addLast(),getFirst(),removeFirst()等.
 2. 由于是采用链表实现的,因此在进行insert和remove动作时在效率上要比ArrayList要好得多!
 3. 适合用来实现Stack(堆栈)与Queue(队列),前者先进后出，后者是先进先出.
-4. 
+4. LinkedList类实现了Queue接口，因此我们可以把LinkedList当成Queue来用
 
 ### ArrayList与LinkedList的区别
 
@@ -416,6 +419,36 @@ Deque：
 小顶堆的感觉，用二叉树实现，每次remove都是删除最小的。 典型示例：任务调度，有优先级的。
 
 其add()自动按照构建小顶堆的方式添加元素。
+
+## 栈 Stack
+**特点**：后进先出，实现了一些栈基本操作的方法（其实并不是只能后进先出，因为继承自Vector，可以有很多操作，从某种意义上来讲，不是一个栈）；
+
+**相关方法**：实现了栈的基本操作。方法如下：
+``` java
+//创建空栈
+public Stack();
+//返回栈顶的值；
+public synchronized E peek();
+//入栈操作；
+public E push(E item);
+//出栈操作；
+public synchronized E pop();
+/判断栈是否为空；
+public boolean empty();
+//返回对象在栈中的位置；
+public synchronized int search(Object o);
+
+```
+**注意**:用作 LIFO（后进先出）堆栈。应优先使用此接口而不是遗留 Stack 类。在将双端队列用作堆栈时，元素被推入双端队列的开头并从双端队列开头弹出.
+`addFirst(); removeFirst();`
+
+## 遗留的集合
+
+**HashTable**: 跟Vector一样，是同步的。一般不考虑同步用HashMap，考虑同步并发用ConcurrentHashMap。也就是基本不用它了。
+
+**枚举**：两个方法，`hasMoreElements(); nextElements();`而 Hashtable类的`elements()`方法将产生一个用于描述表中各个枚举值的对象。Vector类也有这个方法。
+
+**Vector**：随机访问速度快，插入和移除性能较差(数组的特点)；支持null元素；有顺序；元素可以重复；线程安全；
 
 # 进程、多线程、线程池
 
