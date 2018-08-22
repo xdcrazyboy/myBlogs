@@ -1,0 +1,204 @@
+# 一种面向云联盟的分布式访问控制系统
+
+**作者**：Shorouq Alansari,Federica Paci,Vladimiro Sassone
+
+论文发表在**ICDCS**（计算机体系结构/并行与分布式计算/存储系统——**B类会议**）
+
+# 摘要
+**云联盟**：一种新的合作范式，联盟中的组织之间可以通过私有云的架构分享数据。
+> **缺点**：**数据泄露和数据滥用的潜在风险**，这是制约这种合作范式无法广泛推广的原因之一。
+
+>如何解决?需要提供一种机制，能实现组织**控制哪些联盟成员可以访问哪些数据**
+
+当当当当！是时候展现真正的技术啦——我们**提出一种新的针对云联盟的身份和访问管理系统**。
+
+**重点来了**！
+* 我们的系统能让联盟中组织以一种**保护隐私的方式**在他们的数据上实施**基于属性的访问控制**协议。
+* 当用户的**属性满足协议规定条件**时，用户会**被授权访问联盟数据**，而且还**不会泄露其属性**给拥有该数据的联盟其他成员。
+* 我们的系统通过**区块链技术**和**Intel SGX** 可信硬件保证了**协议评估进程**（_*the policy evaluation process*_）的**完整性**。
+    + **区块链**：确保**用户身份属性**和**访问控制协议不能被恶意用户修改**。
+    + **Intel SGX**：保护**协议实施过程**的**完整性**和**隐私性**。
+
+是不是很厉害？总之，我们**提出了访问控制协议**、**设计了系统架构**，外加老规矩——讨论下未来的展望。
+
+**关键词**：区块链，访问控制，匿名身份，云联盟
+
+# Ⅰ  引言
+*云联盟*：云计算实现跨组织的合作，这就叫做云联盟。
+
+其实就是，一堆组织为了共同目标分享自己私有云上的数据给大家访问，但是并不是完全开放的，在这种情况下如何管理身份和访问权限控制就至关重要了。设计这种架构需要满足几个安全要求：
+> 1. 访问控制协议应该被详细指定为基于身份属性的，而不是基于用户角色。
+> 2. 身份属性包含用户的敏感信息，所以需要又能用于验证，又要保证私有性（不能让其他人知道）。
+>3. 保证协议评估进程的完整性。（别中途被改了，那就不安全啦）
+
+云联盟的一些特点：
+> 访问控制协议的实施需要**分布式的**参与. 分布式的特性决定了它**容易受到攻击**，这可能就会危害协议评估进程。比如一个恶意用户或软件很可能控制某台正运行着协议评估引擎或者就存储这访问控制协议，那它就可以更改评估进程和协议，控制系统的决定。（人话就是：我们很容易被黑，如何保证某些人被黑了，整个系统依旧是安全的。）
+
+开始说别人怎么怎么不行啦。这也是论文的**亮点**和得以认可的**关键**之处。
+
+以前就有人提出过：面向云联盟的支持安全数据共享的访问控制架构。比如 参考文献[1][2][3].
+
+However,它们**不支持身份属性的隐私性**、**不保证协议评估进程的完整性**。
+---
+我们支持呀，厉害吧。
+### 贡献
+
+1. **提出**了一种面向云联盟安全数据共享的身份和访问管理的**系统**。系统架构是访问控制是**基于属性的**（其实上文他们提到的就是架构满足的一些要求，他们都满足）。
+2. **属性在协议实施过程中是保证隐私性的**。我访问你的数据，控制协议会验证我的属性是否满足协议要求，但是你无法知道我有什么属性，整个组织也无法知道我的属性满足哪些协议规定。
+> 协议通过一种支持有效密钥管理的加密方法去实施：其中数据使用对称密钥加密，用户只有在满足拥有数据的联盟组织的访问控制协议时才能重新构造密钥。 协议扩展了先前提议的实现隐私保护的文档广播的加密方法。
+
+3. 为了保证协议评估进程的完整性，框架才用了两种新的技术：
+* 区块链技术
+> 一种分布式数据账本，无法更改。 通过一组被叫做矿工的节点去运行共识协议，保证了存储在区块链上得数据和计算指令集（data and computations）的完整性。
+
+> However,我们不能用区块链技术去保证协议实施所用到的加密方法的完整性。为什么呢？两个原因：  
+> 1.  加密方法需要公开。
+> 2. 在区块链上部署和执行基于此方法的加密操作花销太大。
+
+所以我们采用了Intel'SGX去解决如何保证协议实施过程得完整性和有效执行的问题。
+* Intel's SGX trusted hardware
+> 一种可信执行环境，能保护敏感代码和数据的完整性和保密性。
+
+# Ⅱ 基本的技术背景
+## A. 区块链和智能合约
+*区块链*：一种在**P2P网络**上节点的**抗干扰**（tamoer-proof）的**公共**交易**账本**。不依赖可信中心化授权机构去记录账本，而是同一区块链网络中各节点使用共识机制去一致确认（agree on）账本内容，用密码hash和数字签名去保证交易完整性。
+
+*智能合约*：这是区块链的一种新特性，可以执行程序，这让构建一个一般的可编程基础设施成为可能。智能合约部署和运行在区块链网络上，它可以被用来在最小化信任要求下达成共识、解决公共问题。
+
+## B. 可信硬件
+可信硬件平台旨在构建一个安全、隔离的软件执行环境，该环境可以保护安全敏感程序在一些软件攻击下的完整性和保密性。 而Intel' Software Guard Extentions(SGX)就是最新的一种可信硬件解决方案。
+
+*Intel SGX* :是一组Intel架构上的扩展，它实现了在远程系统上运行可信计算。（这个稍后再详细介绍）
+
+## C. 加密的构建块（Cryptographic Building Blocks）
+
+（后面会涉及一些密码学专业术语，不一定翻译准确，有些会保持英文）
+### a) Pedersen commitment
+佩德森承诺机制是一种两阶段的协议：
+
+1. *commit*：**发送方S** *commit* 一个值给**接收方R** ,这一步**R**不知道哪个值被commit。
+2. *reveal* : 揭示原始值。**R可以验证**这个值是否就是**S** commit的那个值。 
+
+该机制是基于离散对数难题，工作流程如下：（密码学的流程，暂时不会写）
+
+### b) OCBE协议
+Oblivious Commitment-Based Envelope protocols: 这个协议除了发送者和接受者，还引入了一个可信授权中心（CA）。目的是实现**满足属性保密性**的**基于属性的访问控制协议**。（具体介绍暂时省略，容我去问一下密码学方向的博士师姐）
+
+# Ⅲ. 提议的协议
+协议是建立在别人的基础上的（见参考文献[4]）。 它引入了四个主要的实体：
+
+* O - 拥有共享数据的联盟组织
+* R - 请求访问共享数据的用户
+* IP - 身份提供者，负责云联盟中用户身份的管理。
+* ACM - 访问控制管理员，负责加密数据、产生检索解密密钥的参数。
+
+协议的主要阶段：
+
+* a) 协议定义：每个O拥有一组数据D={D1,...,Dt}用来分享给联盟其他成员的。 
+* b) 数据加密：
+* c) 身份标识发布阶段：
+* d) 身份标识注册阶段：
+* e) 数据访问：
+
+# Ⅳ. 系统架构
+系统由**分布**在作为联盟的部分组织的**云基础架构**的一些组件组成（见 Fig 1）。
+
+**目标**：有效的存储数据和执行代码，并且保证它们的**完整性**。
+
+**链上**：身份属性和访问控制协议以智能合约的形式存储在区块链上。
+
+**链下**：加密后的数据；私钥和计算强化加密策略实施协议是在线下执行。
+
+**Intel SGX 的应用**： 由两部分组成：不可信部分；可信部分。
+
+![系统架构](https://user-gold-cdn.xitu.io/2018/5/14/1635de27a025d28f?w=736&h=429&f=png&s=186237)
+
+下面我们将描述下**基于**（文献[12]提出的）**Intel SGX**一种正式设想（formal abstraction）的**架构的主要组件的行为**：
+
+**a)** *Data Owner* **O** : 一个web应用，允许数据拥有者去详细定义访问控制策略并利用ACM提供数据去分享。
+
+**b)** *Data Requester* **R** : 一个支持SGX的应用，它包含两个主要子部件：
+
+* *Relay*R :
+* *Encl*R :
+
+
+**c)** *Identity Provider* **IP** : 一个结合了运行在区块链上的智能合约的应用 和 运行在安全SGX上的链下的程序。
+
+**d)** *Access Control Manager* **ACM** : 类似于IP，它也分为链上和链下的两部分：
+
+**e)** *Off-chain Storage* **S** : 由于区块链上不便于存放大量数据，所以我们采用分布式哈希表（DHTs）去存储加密后的数据。
+
+# Ⅴ. 相关工作
+## a) Blockchain-based Access Control
+（暂略）
+## a) Access Control in Multi-Clouds
+（暂略）
+
+# Ⅵ. 讨论和总结
+### 我们的亮点
+* 用户隐私保护
+* 细粒度的访问控制
+* 完整性
+
+### 未来工作
+* 设计一种激励机制。
+> 1.奖励分享数据的那些人；补偿他们数据被滥用那些人。  
+2.奖励那些维护数据被正确使用的人。（矿工之类） 
+
+* 基于Ethereum区块链和Intel SGX的可行执行环境，开发一个概念验证模型。然后针对协议的安全性、效率、执行花销等方面做些展评估。（他们没有实验！也没具体实现，这是硬伤）
+
+
+# 参考文献
+[1] M. Singhal, S. Chandrasekhar, T. Ge, R. Sandhu, R. Krishnan, G. J. Ahn,
+and E. Bertino, “Collaboration in multicloud computing environments:
+Framework and security issues,” Computer, vol. 46, no. 2, pp. 76–84,
+2013.
+
+[2] A. Almutairi, M. Sarfraz, S. Basalamah, W. Aref, and A. Ghafoor,
+“A distributed access control architecture for cloud computing,” IEEE
+Softw., vol. 29, no. 2, pp. 36–44, Mar. 2012.
+
+[3] B. Suzic, B. Prünster, D. Ziegler, A. Marsalek, and A. Reiter, “Balancing
+utility and security: Securing cloud federations of public entities,”
+in OTM Confederated International Conferences" On the Move to
+Meaningful Internet Systems". Springer, 2016, pp. 943–961.
+
+[4] N. Shang, M. Nabeel, F. Paci, and E. Bertino, “A privacy-preserving
+approach to policy-based content dissemination,” in Data Engineering
+(ICDE), 2010 IEEE 26th International Conference on. IEEE, 2010,
+pp. 944–955.
+
+[5] S. Nakamoto, “Bitcoin: A peer-to-peer electronic cash system,” 2008.
+
+[6] I. CORP., “Intel(r) software guard extensions (intel(r) sgx) sdk,” https:
+//software.intel.com/en-us/sgx-sdk, 2015.
+
+[7] G. Wood, “Ethereum: A secure decentralised generalised transaction
+ledger, 2014,” Ethereum Project Yellow Paper, 2014.
+
+[8] IntelCorp., “Intel (r) software guard extensions enclave writer’s guide,”
+Tech. Rep., 2015.
+
+[9] T. P. Pedersen, “Non-interactive and information-theoretic secure veri-
+ﬁable secret sharing,” in Annual International Cryptology Conference.
+Springer, 1991, pp. 129–140.
+
+[10] J. Li and N. Li, “OACerts: Oblivious Attribute Certiﬁcates,” Dependable
+and Secure Computing, IEEE Transactions on, vol. 3, no. 4, pp. 340–
+352, 2006.
+
+[11] M. Nabeel and E. Bertino, “Attribute based group key management,” in
+Proceedings of the 14th ACM symposium on Access control models and
+technologies, 2014.
+
+[12] F. Zhang, E. Cecchetti, K. Croman, A. Juels, and E. Shi, “Town crier: An
+authenticated data feed for smart contracts,” Cryptology ePrint Archive,
+Report 2016/168, 2016, http://eprint.iacr.org/2016/168.
+
+[13] G. Zyskind, O. Nathan, and A. Pentland, “Decentralizing privacy: Using
+blockchain to protect personal data,” in Security and Privacy Workshops
+(SPW), 2015 IEEE, May 2015, pp. 180–184.
+
+[14] ——, “Enigma: Decentralized computation platform with guaranteed
+privacy,” CoRR, vol. abs/1506.03471, 2015.

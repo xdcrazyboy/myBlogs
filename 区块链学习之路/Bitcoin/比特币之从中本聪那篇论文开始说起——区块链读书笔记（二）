@@ -1,0 +1,45 @@
+# **前言**
+
+在2013年刚听到比特币的时候，觉得就是极客做出来解答数学难题，然后给个虚拟币作为奖励的**游戏**，不过在2017年初，导师给的一个项目让我从新接触区块链，还有以太坊。一直也没时间闲下来写点东西，想着看了这么多论文资料，总得自己找个地方梳理一下，那就开始写吧，没啥逻辑，先写吧，想得多可能就做不下去，还是先做再说。 先从区块链的第一个应用——比特币开始写起。 说到比特币就得先看下这最开始的论文，感觉也不是正式的论文，不过里面还是很多东西的。 大家可以直接在官网上[下载](https://bitcoin.org/bitcoin.pdf)（这网站域名还是中本聪自己注册的）。
+
+# 参考文献
+
+我觉得从它的参考文献可以看出很多东西，所以把这应该是最后的东西放到前面。 其实在中本聪之前已经很多人对数字货币进行了探索，而参考文献中挺多都是前辈。
+
+1 **W. Dai**, "**b-money**," [http://www.weidai.com/bmoney.txt](http://www.weidai.com/bmoney.txt), 1998. 
+
+>Wei Dai，这人就厉害了，咋一看有点像中国人名字。 他在1998年就提出了一个无政府的自由货币——[bmoney](http://www.weidai.com/bmoney.txt)，上面有链接，可以直接去看，那排版（很有九十年代网页的特点）。说的内容呢：开头就是“I am fascinated by Tim May's crypto-anarchy.”（crypto-anarchy：**加密无政府状态**）。文章大体意思是任何人都可以通过一个类似哈希现金的系统创造虚拟货币。跟比特币一样也是一种**点对点**的网络，每个节点维护一个数据库账本，但是**不记录全部交易信息**，每个节点**都有一个它自认为准确的账本**。还附录了每种货币产生都需要经历的四个阶段：规划、投标、计算、产币。没太看懂，不过比特币借鉴了它挺多想法。但是B-money是在**亚当·贝克**（又一个大佬，后面也有一篇参考文献是它的，他提出了**Hashcash！**）跟中本聪早期交流下提议加入比特币体系的，而戴维向中本聪介绍了**比特黄金**（还是一个大佬，**尼克·萨博**1998年提出来的东西）。比特币在2010年的时候被维基百科主编认为不值一提，准备删除比特币词条，然后中本聪就赶紧跟几个小伙伴讨论修改比特币的描述为（大概意思）：“**比特币是戴维的B币畅想和萨博的比特黄金的具体实现**”。 
+
+2 H. Massias, X.S. Avila, and J.-J. Quisquater, "Design of a secure **timestamping** service with **minimal trust requirements**," In 20th Symposium on Information Theory in the Benelux, May 1999. 
+
+>这篇就相对学术了，用了google学术才搜到[这文章](http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=B8C3DE0657ADBAC99B35BD477FED76F2?doi=10.1.1.13.6228&rep=rep1&type=pdf)，在比荷卢经济联盟第20届信息理论研讨会上发表的，从标题就能看出大概意思：在最低的信任要求前提下设计这一种安全的**时间戳服务**。文章我也没仔细看，摘要也是没有什么内容：“本文介绍了我们为比利时TIMESEC项目设计的时间戳系统。我们首先介绍使用的时间戳方法，并且证明我们的选择是正确的。 然后，我们介绍我们实施的设计，以及我们发现的一些重要问题及其解决方案”，文章也不长，其中有一张图画的就是**Merkle树**，所以这文章主要是为了merkle引用的。 Merkle树确实是比特币一个很重要的环节，大家可以去自己先了解，后面有时间我会写写它。
+
+3 S. Haber, W.S. Stornetta, "How to **time-stamp** a digital document," In Journal of Cryptology, vol 3, no 2, pages 99-111, 1991. 
+
+>发现了google学术的好用，大家可以从[这里](https://link.springer.com/chapter/10.1007/3-540-38424-3_32)去下载看。从摘要看大体意思是：针对音频，图片和视频各种文件创建和修改时的认证问题，提出了计算实用的程序来对这些文件打上数字时间戳，从而即使在时间标戳服务的勾结下，用户也不可能修改或者还原文件的时间。我们的程序保持了文件本身的完整隐私，并且不需要时间戳服务去记录。 不是很通顺，总之时间戳是比特币很重要的一个技术，涉及到非对称加密（公私钥）、Hash，是必须要了解清楚的技术。因为比特币的不可篡改性就用到了它。
+
+4 D. Bayer, S. Haber, W.S. Stornetta, "[Improving the efficiency and reliability of digital **time-stamping**](https://link.springer.com/chapter/10.1007/978-1-4613-9323-8_24)," In Sequences II: Methods in Communication, Security and Computer Science, pages 329-334, 1993.
+
+>关于数字**时间戳**的。本文提出了一种**减少了**验证给定证书所需的**存储和计算**的方法,展示了如何在特定情况下使用时间戳来延长不同种类的真实性加密认证的有效生命周期。这可以应用于数字签名或时间戳本身，使数字时间戳过程可更新。因为学校没能免费下载这篇文章，暂时从摘要上感觉就是介绍时间戳，hash函数的，这两个技术其实也可以说是一个东西，时间戳就是需要用到hash函数，总之做技术有必要去了解这两个东西。
+
+
+ 5 S. Haber, W.S. Stornetta, "[Secure names for **bit-strings**](https://dl.acm.org/citation.cfm?id=266430)," In Proceedings of the 4th ACM Conference on Computer and Communications Security, pages 28-35, April 1997.
+ 
+ >针对比特字符串（数字文档）的**安全命名机制**。虽然说hash函数可以直接让文档生成一串唯一的字符串，但是有几大缺点：文档永流传，但是hash函数可能后来就不安全了，需要长久保存的文档一直要改；hash值太长了，难记还没有啥意义；文档作者没办法控制这hash值形式，也无法与之产生内在联系去确定归属权。针对这些问题，文章提出了一种新的命名机制可解决上述问题，方法证明安全，而且有实际使用的例子了。 这篇文章可能主要与**比特币地址的如何产生**有关系。
+
+ 6 **A. Back**, "**Hashcash** - a denial of service counter-measure," [http://www.hashcash.org/papers/hashcash.pdf](http://www.hashcash.org/papers/hashcash.pdf), 2002.
+ 
+ >顾名思义：一种针对拒绝服务攻击的应对方法。其实这就是著名的proof-of-work（PoW，工作量证明机制）最开始的来源。论文提高，Hashcash最初被提议作为一种遏制未知的互联网系统资源被滥用的措施，例如电子邮件，它可以用工作量做证明。成本函数交互式和非交互的变体能够被构建，可以在服务器能发出的一个挑战（连接导向的交互协议）的情况下使用（这里可能涉及到困难调整）。且看正文吧，我其实也快忘了。
+
+ 7 R.C. **Merkle**, "Protocols for **public key** **cryptosystems**," In Proc. 1980 Symposium on Security and Privacy, IEEE Computer Society, pages 122-133, April 1980.
+ 
+ >R.C.Merkle这是为大佬呀，他是**公共密钥的发明人之一**，密码hash的发明者。他跟M.Hellman发表了自己引用数最多的文章，后者跟W. Diffie发表了著名的Diffie-Hellman算法，那真是密码学人才辈的年代呀，扯远了，收！ 本文主要是整理了新的密码协议充分利用了**公钥密码**系统的独特属性，用于**公共密钥分发**和**数字签名**的协议，并与传统的替代方案进行了比较。 其实Merkle就是提出**Merkle树**的大佬，这也是比特币关键技术之一，这篇论文只有**一幅图**，那就是：
+ 
+ 
+![Merkle树](https://user-gold-cdn.xitu.io/2018/5/2/163203b25ac1abf6?w=506&h=269&f=jpeg&s=17843)
+
+ 8 W. Feller, "An introduction to probability theory and its applications," 1957.
+ 
+ >概率理论及其应用的介绍.这个应该就是中本聪**证明区块越长越难以篡改所用到的理论啦**。作为数学渣渣，只能把[这篇文章](http://www.eng.utah.edu/~cs5961/lec_Notes/feller.chap2.pdf)链接给大家自己看看，反正我没仔细看。
+ 
+ （未完待续 于2018.5.2）
