@@ -361,15 +361,32 @@ add() -> put() ; next() -> get();
 
 ### HashMap
 
-**底层实现**：HashMap是基于**哈希表**的M**ap接口**的**非同步**实现，Java最基本数据结构就是两种，一种是数组，一种是引用。**所有的数据结构都可以用这两个基本结构来构造的**，HashMap也不例外。HashMap实际上是一个“**链表散列**”的数据结构，即数组和链表的结合体。**HashMap底层**就是一**个数组结构**，**数组中的每一项又是一个链表**。当新建一个HashMap的时候，就会初始化一个数组。Entry就是数组中的元素，每个 Map.Entry 其实就是一个key-value对，它持有一个指向下一个元素的引用，这就构成了链表。
+**底层实现**：HashMap是基于**哈希表**的M**ap接口**的**非同步**实现。它是线程不安全的，允许key为null,value为null。
+> * Java最基本数据结构就是两种，一种是数组，一种是引用。**所有的数据结构都可以用这两个基本结构来构造的**,HashMap也不例外。
+> * HashMap实际上是一个“**链表散列**”的数据结构，即数组和链表的结合体。
+> * **HashMap底层**就是一**个数组结构**，**数组中的每一项又是一个链表**。
+> * 当新建一个HashMap的时候，就会初始化一个数组。Entry就是数组中的元素(1.8改成Node)，每个 Map.Entry 其实就是一个key-value对，它持有一个指向下一个元素的引用，这就构成了链表。
+> * 每一个节点的hash值，是将key的hashCode 和 value的hashCode 异或 ^ 得到的。
 
 **存取实现**：
 * **put**元素的时候:
 1. 先根据**key的hashCode重新计算hash值**，根据hash值得到这个元素在**数组中的位置**（即下标）。
-2. 如果数组该位置上已经**存放有**其他元素了，那么在这个位置上的元素将**以链表的形式存放**，**新加入的放在链头，最先加入的放在尾**。
+2. 如果数组该位置上已经**存放有**其他元素了，那么在这个位置上的元素将**以链表的形式存放**，**新加入的放在链头，最先加入的放在尾**，1.8某版本之后放到链尾了，防止多并发造成的死循环。
 3. 如果数组该位置上没有元素，就直接将该元素放到此数组中的该位置上。
 
 * **get**元素的时候
+
+> **注意**：
+> * 当HashMap的容量达到threshold域值时，就会触发扩容。扩容前后，哈希桶的长度一定会是2的次方。 这样在根据key的hash值寻找对应的哈希桶时，可以用位运算替代取余操作，更加高效。
+> * 扰动函数,hashcode还要处理下，更均衡,高低位都参与运算。
+> * HashMap的源码中，充斥个各种位运算代替常规运算的地方，以提升效率： 
+>   1. 与运算替代模运算。用 hash & (table.length-1) 替代 hash % (table.length) 
+>   2. 用if ((e.hash & oldCap) == 0)判断扩容后，节点e处于低区还是高区。(冲突，自然就要分区)
+
+### HashMap和有序LinkedHashMap实现对比
+* LinkedHashMap简单来说是一个**有序**的HashMap
+* LinkedHashMap实现有序key值的关键就是根据插入顺序另外维护了一个按照插入顺序作为标记的双向循环列表
+  
 
 ### TreeMap
 
@@ -407,9 +424,10 @@ add() -> put() ; next() -> get();
 
 ### 一些方法
 Queue：
-* `boolean add(E element)` 和 `boolean offer(E element)`：尾部添加元素，如果满了，第一个方法是抛出异常，第二个是返回false。
-* E remove() ; E poll(); **删除并返回**队头元素，为空的话，第一个抛出异常，第二个返回nul。
-* E element(); E peek();**返回但不删除**头部元素，如果为空，第一个抛出异常，第二个返回null。
+* `boolean add(E element)` 
+  和 `boolean offer(E element)`：尾部添加元素，如果满了，第一个方法是抛出异常，第二个是返回false。
+* ` E remove() ; E poll();` **删除并返回**队头元素，为空的话，第一个抛出异常，第二个返回nul。
+* `E element(); E peek();`**返回但不删除**头部元素，如果为空，第一个抛出异常，第二个返回null。
 
 Deque：
 * `void addFirst(E element); void addLast(E element)`和`boolean offerFirst(E element); boolean offerLast(E element)`:前两个添加失败是抛出异常，后两个是返回false。
@@ -476,7 +494,116 @@ sleep必须捕获异常，而wait，notify和notifyAll不需要捕获异常
 >2. 在一个进程内也需要并行执行多个程序，实现不同的功能。 性能也快很多
 >3. 进程有时候性能比较低。
 
+## 线程
+``` Java
+Thread(Runable target); //构造一个新线程
+void start(); //启动这个线程，将引发调用run()方法。这个方法将立即返回，并且新线程将并发运行
+void run(); //调用关联Runnable的run方法
+——————
+Thread t = Thread(r);
+t.start();
+```
+### 中断线程
+* run()方法执行到最后一个语句，并经由return语句返回时；
+* 出现在方法中没有捕获的异常；
+* 早起有个stop（弃用），现在用`interrupt`方法：
+  > 调用interrupt方法时，线程中的**中断状态**将被置位，一个boolean值，每个线程都有，时刻要检查。
+  > ```Java 
+  > while(!Thread.currentThread().isInterrupted() && more work to do){do more work}
+  > ```
+
+  * 中断不意味着终止；
+  * 线程被阻塞时，无法检查中断状态，会发生异常——打断阻塞调用。
+  * 循环调用sleep，不会检查中断状态（中断状态被置位时调用sleep是不会休眠的。）
+* Thread类的方法
+  ```java
+   void interrupt();//中断状态被置位true，如该线程被sleep调用阻塞-》InterruptException异常
+   static boolean interrupted();// 测试当前线程是否被中断，并且会把中断状态置false
+   boolean isInterrupted();//测试，不会改变状态
+   Thread currentThread(); //返回代表当前执行线程的Thread对象
+  ```
+
+### 线程状态 
+6种：用`getState()`获取状态
+
+* New  -> new Thread(r)之后
+* Runnable 可运行  -> start()之后
+  > 可能运行也可能不在运行；抢占式调度，多处理器可以多个线程并行，超过处理器数量，也会采用时间片机制
+* Blocked ->线程获取内部对象锁（不是concurrent库中的锁），别人再用，那就进入阻塞。
+* Waiting ->线程等待另一个线程通知调度器一个条件？？？，等待通知，进入等待。
+  > 比如调用 Object.wait(); Thread.join();或者等待concurrent库中的Lock或Condition时，就会出现这种情况。
+* Timed waitiong 计时等待 -> 调用几个有超时参数的方法，保持到超时期满或者收到适当的通知；
+  > Thread.sleep() / Object.wait() / Thread.join  / Lock.tryLock  / Condition.wait
+* Terminated -> 1. run()方法正常退出而死亡；未捕获异常终止了run方法而意外死亡。
+
+### 线程属性
+1. 线程优先级：1-10，`setPriority()`设置，高度依赖与系统的分级，慎用。
+2. 守护线程：唯一用途——为其他线程提供服务，例如，计时线程。 当只剩下守护线程时，虚拟机就退出，不要用它器访问固有资源，因为它随时会发生中断。
+   
+
+## 同步
+多个线程竞争资源（Bank账户写..）出现冲突，需要用到锁。
+
+**条件对象**：用来管理哪些已经获得一个锁但却不能做有用工作的线程（比如余额不足，无法转账），用条件对象去表达余额充足的条件：
+``` java
+private Condition sufficientFunds;
+...
+sufficientFunds = bankLock.newCondition();
+...
+//如果发现余额不足，可调用方法
+sufficientFunds.await();  //当前线程被阻塞，并放弃锁
+//需要配套的方法唤醒，而不是锁可用就行,这方法也只是解除阻塞，不是激活它，需要它自己去重新竞争锁
+sufficientFunds.signalAll();  //解除该条件的等待的所有线程的阻塞状态，signal()则是随机选一个
+```
+
 ## 锁-多线程
+**锁和条件的关键之处**：
+1. 锁用来保护代码片段，任何时刻只能有一个线程执行被保护代码；
+2. 锁可以管理试图进入被保护代码段的线程；
+3. 锁可以拥有一个或者多个相关的条件对象；
+4. 每个条件对象管理哪些已经进入被保护代码段，但是还不能运行的线程。
+   
+
+**Lock**：如果锁被另一个线程拥有，则发生阻塞；
+
+**ReentrantLock**：可重入锁，用来保护临界区，公平策略；
+
+**ReentrantReadWriteLock**：读写锁，适用于读多写少的场景，允许读者线程共享访问，写者线程依旧是互斥访问。
+
+**synchronized**：Java语言内部锁。只有一个相关条件，使用`wait()`和`notify()/notifyAll()`进行线程等待和解除阻塞。(这三个方法是Object类的final方法，自己命名的Condition方法必须命名为await、signalAll，不冲突。)；锁变量，保证三大特性（原子、可见、有序），编译器优化。
+> 存在一些局限性：
+> 
+>   1. 不能中断一个正在试图获得锁的线程；
+>   2. 试图获得锁时不能设定超时；  但是有wait(long millis)方法。
+>   3. 每个锁只有单一的条件对象，可能是不够的。
+
+**使用建议**： 
+1. 最好用java.util.concurrent包中的一种机制；
+2. 如果synchronized关键字适合，那就用吧，可以减少代码数量，减少出错的几率；
+3. 除非很有必要，才使用Lock/Condition。 
+
+**监视器概念**：实现不需要程序员考虑如何加锁的情况下，就可以保证多线程的安全性。监视器具有以下概念：
+
+* 只包含私有域的类；
+* 每个监视器类的对象有一个相关的锁；
+* 使用该锁对所有方法进行加锁，调用时自动获得，方法返回时自动释放；
+* 可以有任意多个相关条件。
+
+但是Java对象有三个不满足于监视器的诟病：
+
+* 域不要求必须是private；
+* 方法不要求必须是synchronized；
+* 内部锁对客户是可用的。
+
+**Volatile域**：为实例域的同步访问提供了一种**免锁机制**。开销小，非阻塞；不保证原子性；
+> 应对：指令重排 和 多处理器出现-暂存在寄存器或本地内存缓冲去中保存内存中的值，多线程取值不同；
+
+**原子性**：i++不是一个原子操作：读，加，写。
+解决：jdk1.5后，concurrent.atomic包提供了int和long类型的装类，可以保证操作的原子性，而不需要使用同步。可以用`AtomicInteger.incrementAndGet()`以原子性将整数自增。
+```java
+ public static AtomicLong nextNumber = new AtomicLong();
+ long id = nextNumber.incrementAndGet();
+```
 
 ### Synchronized 和 ReentrantLock的区别？
 
@@ -500,11 +627,38 @@ AQS使用一个FIFO的双向队列表示排队等待锁的线程。队列头节�
 
 AQS还有一个表示状态的字段state。
 
-### 什么是原子操作？
+### 死锁
 
-i++不是一个原子操作：读，加，写。
-解决：jdk1.5后，concurrent.atomic包提供了int和long类型的装类，可以保证操作的原子性，而不需要使用同步。
+> 当程序挂起时，用Ctrl + \，将得到一个所有线程的列表，还能看到线程被阻塞的位置。 也可以用`jconsole`参考线程面板。
 
+signal只为一个线程解锁，容易导致死锁，无法避免。
+
+**尽量避免共享变量**：使用ThreadLocal辅助类为各个线程提供各自的实例。而不是为之构造一个局部对象。
+
+**ThreadLocal**：
+
+* 方法:
+  ```java
+  get();//得到这个线程的当前值
+  initialize(); //覆盖这个方法用于提供初值
+  set();//为这个线程设置一个新值
+  remove();//删除对于线程的值
+  static <S> ThreadLocal<S> withInitial(Supplier<? extends S> supplier); //创建一个线程局部变量
+  ```
+### 线程安全的集合
+
+* **ConcurrentHashMap**:
+
+
+### 同步器
+
+帮助管理相互合作的线程集。
+
+1. 信号量 Semaphpre ： 许可证，acquire请求许可，release释放许可；
+2. 倒计时门栓 CountDownLatch： 倒计时，技术为0，不可用，一次性的；计数值初始为1时比较特殊。
+3. 障栅 CyclicBarrier ： 集结点，线程都完成到达门口，门才开;可重复使用
+4. 交换器 Exchanger ： 当两个线程在同一个数据缓冲去的两个实例上工作时。
+5. 同步队列 SynchronousQueue 生产者消费者线程配对的机制
 
 
 # IO
@@ -592,6 +746,11 @@ JDK1.4开始，增加了新的io模式**new IO**。 Socket也属于IO的一种�
 
 
 # Spring
+[参考文章1](https://juejin.im/post/5b6d33555188251b176a962b?utm_source=gold_browser_extension)
+
+## Spring的优点、特点
+轻量级、松散耦合、开源、可集成其他框架、分层体系结构，用户可选择组件。
+
 ## 注解那些事
 
 * 
