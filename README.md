@@ -12,6 +12,7 @@
   5. 《区块链技术指南》-邹均等 
 * 论文
 * 博客
+   
 
 ## 密码学基础
 
@@ -94,11 +95,15 @@
 
 ## 1 Java基础
 
+## 他山之石
+  1. [Java-Guide——还不错的一个java知识总结](https://github.com/Snailclimb/Java-Guide)
+  2. [JCSprout——一万+Star的一个java知识库总结](https://github.com/crossoverJie/JCSprout)
+
 
 ## Java基础
 - **[总论:Java技术面试点](Java基础/README.md)**
 - [Maven学习笔记](Java基础/Maven学习笔记.md)
-=======
+  
 ## 2 分布式服务架构
 
 
