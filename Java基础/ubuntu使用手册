@@ -1,0 +1,4 @@
+1.sudo apt-get install  openssh-client=1:6.6p1-2ubuntu1
+// 上面安装的是  1:6.6p1-2ubuntu1    openssh-client
+
+2.ipv6地址：2604:a880:2:d0::65d:2001
