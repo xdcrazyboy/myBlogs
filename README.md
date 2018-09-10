@@ -96,8 +96,12 @@
 ## 1 Java基础
 
 ## 他山之石
+- 应对面试：
   1. [Java-Guide——还不错的一个java知识总结](https://github.com/Snailclimb/Java-Guide)
   2. [JCSprout——一万+Star的一个java知识库总结](https://github.com/crossoverJie/JCSprout)
+  3. [interviews: 面试（java方向——这里有一切你在面试中需要知道的。](https://github.com/kdn251/interviews)
+  4. [算法（Java实现）——All Algorithms implemented in Java](https://github.com/TheAlgorithms/Java)
+  5. [设计模式大全（Java实现）](https://github.com/iluwatar/java-design-patterns?utm_source=gold_browser_extension)
 
 
 ## Java基础
