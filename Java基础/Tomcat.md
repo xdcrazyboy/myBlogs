@@ -97,6 +97,33 @@ Endpoint会启动一组线程来监听Socket端口，当接受到客户端请求
    
    应用服务器一般会自行创建类加载器以实现更灵活的控制，一方面是对规范的实现（Servlet规范要求每个Web应用都有一个独立的类加载器实例），另一方面也有架构层面的考虑：
 
-   - 隔离性
-   - 灵活性
-   - 性能
+   - **隔离性**：Web应用类库相互隔离，避免依赖库或者应用包相互影响。
+   - **灵活性**：可以只针对一个Web应用进行重新部署，不影响其他应用，更加灵活。
+   - **性能**：只搜索自己的Jar包，效率会高一些。
+
+    Tomcat的类加载方案：
+    - Common Class Loader：以System为父加载器，路径为common.loader
+        - Catalina Class Loader:用于加载Tomcat应用服务器的类加载器，路径为server.loader，默认为空，用父类加载应用服务器。
+        - Shared Class loader:是所有Web应用的父加载器，默认为空。
+            - Web Appl Class loader：以Shared为附加在其，加载`/WEB-INF/classers`目录下的未压缩的Class和资源文件，以及`/WEB-INF/lib`目录下的Jar包。只对当前web应用可见。
+
+    架构分析补充：
+    - **共享**：
+        - Common类加载器：实现了 **Jar包在应用服务器和Web应用之间的共享**。
+        - Shared类加载器：实现了 **Jar包在Web应用之间的共享**。
+    - **隔离性**：
+        - 服务器与Web应用的隔离，理论上，除了Servlet规范定义的接口外，Web应用不应该依赖服务器任何的实现类（通过 **JVM的安全策略许可** 实现），这样才有助于Web应用的可移植性。 正因如此，Tomcat通过Catalina类加载器加载服务器依赖的包，以便应用服务器与Web应用更好地隔离。
+
+
+    Web应用类加载器
+    - **Java默认的类加载机制**的委派过程：
+        1. 从缓存中加载；
+        2. 没有？从父类加载器中加载；（双亲委派0
+        3. 没有？从当前类加载器加载；
+        4. 如果还是没有，抛出异常。
+    - Tomcat中Web应用类加载器过程：
+        1. 从缓存中加载
+        2. 没有？从JVM的Bootstrap类加载器加载
+        3. 没有？从当前类加载器加载（先`WEB-INF/classes`,再`WEB-INF/lib`）；
+        4. 没有？从父加载器加载，而父类加载器使用默认的委派模式（System、Common、Shared）
+    - Tomcat提供`delegate`属性用于控制是否启用Java委派模式，默认为`false`。  
