@@ -16,3 +16,19 @@ make install
 make test
 
 ```
+
+# 入门
+
+## 数据类型
+
+### 字符串类型
+
+- `INCR` 自增  （需要是原子操作）
+  > 实践： 1. 文章访问量统计； 2.生成自增ID； 3. 存储文章数据
+- `INCRBY key increment`  -- 可以指定一次增加的数值，increment参数表示该数值
+- 对应的减少命令有`DECR`、`DECRBY`
+- `INCRBYFLOAT` 增加指定浮点数
+- `APPEND key value` 向尾部追加 值（字符串）
+- `STRLEN key` 获取字符串长度
+- `MGET/MSET key1 (v1) key2 (v2) ...`通知获取多个键值
+- 位操作：`GETBIT`、`SETBIT`、`BITCOUNT`、`BITOP`
