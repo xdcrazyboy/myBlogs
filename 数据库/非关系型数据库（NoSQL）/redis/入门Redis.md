@@ -31,4 +31,8 @@ make test
 - `APPEND key value` 向尾部追加 值（字符串）
 - `STRLEN key` 获取字符串长度
 - `MGET/MSET key1 (v1) key2 (v2) ...`通知获取多个键值
-- 位操作：`GETBIT`、`SETBIT`、`BITCOUNT`、`BITOP`
+- 位操作：
+    - `GETBIT key 3` 获取指定位置的而二进制位的值（0/1）、
+    - `SETBIT key  6 0` 设置指定位置的二进制值、
+    - `BITCOUNT key (0 2)` 获取字符串类型键值是1的二进制个数(指定统计的字节范围，是字节，不是bit)、
+    - `BITOP OR/AND/XOR/NOT res(存结果) foo1 foo2` 对多个字符串类型键进行位运算，结果存到指定的键中、 `BITPOS key 0/1 1 2` 获取指定键的第一个位值为0或1的位置，可以指定字节范围，都是从0开始计数。
