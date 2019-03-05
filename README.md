@@ -12,6 +12,14 @@
   5. 《区块链技术指南》-邹均等 
 * 论文
 * 博客
+
+### 区块链编程参考
+1. [ChainSQL: the collaboration of blockchain and database](https://github.com/ChainSQL/chainsqld)
+2. [EtherQL](https://github.com/LeonSpark/EtherQL)
+
+源码分析
+
+1. [以太坊源码分析](https://github.com/ZtesoftCS/go-ethereum-code-analysis)
    
 
 ## 密码学基础
@@ -91,24 +99,28 @@
 
 ### 国外币圈
 
-# 架构师之路
+---
 
-## 1 Java基础
+#  Java
 
 ## 他山之石
 - 应对面试：
   1. [Java-Guide——还不错的一个java知识总结](https://github.com/Snailclimb/Java-Guide)
-  2. [JCSprout——一万+Star的一个java知识库总结](https://github.com/crossoverJie/JCSprout)
-  3. [interviews: 面试（java方向——这里有一切你在面试中需要知道的。](https://github.com/kdn251/interviews)
-  4. [算法（Java实现）——All Algorithms implemented in Java](https://github.com/TheAlgorithms/Java)
-  5. [设计模式大全（Java实现）](https://github.com/iluwatar/java-design-patterns?utm_source=gold_browser_extension)
+  2. [互联网 Java 工程师进阶知识完全扫盲](https://github.com/doocs/advanced-java?utm_source=gold_browser_extension)
+  3. [JCSprout——一万+Star的一个java知识库总结](https://github.com/crossoverJie/JCSprout)
+  4. [interviews: 面试（java方向——这里有一切你在面试中需要知道的。](https://github.com/kdn251/interviews)
+  5. [算法（Java实现）——All Algorithms implemented in Java](https://github.com/TheAlgorithms/Java)
+  6. [设计模式大全（Java实现）](https://github.com/iluwatar/java-design-patterns?utm_source=gold_browser_extension)
+  7. [秒杀系统设计与实现.互联网工程师进阶与分析](https://github.com/qiurunze123/miaosha?utm_source=gold_browser_extension)
 
 
 ## Java基础
 - **[总论:Java技术面试点](Java基础/README.md)**
 - [Maven学习笔记](Java基础/Maven学习笔记.md)
   
-## 2 分布式服务架构
+
+---  
+#  分布式服务架构
 
 
 ## 3 云计算&容器技术
@@ -131,5 +143,11 @@
 ### Docker
 
 ### 3.1 Docker
+
+---
+# C++
+
+## 他山之石
+1. [C/C++面试基础知识总结](https://github.com/huihut/interview)
 
 
