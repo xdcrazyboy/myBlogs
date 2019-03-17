@@ -25,5 +25,10 @@ Client——》Proxy——》Protocol（通过协议序列化字节流）——�
 - protobuf，kyro，Hessian等
 
 # Server
+核心是netty的channel的使用和cglib的反射机制。
 
 # Client 
+- Future
+- 复用资源
+- 动态代理的实现
+  > 动态代理的经典应用之一——Spring中的AOP，面向切面的编程实现。  动态代理就是在原有方法Before或者After添加代码。 而RPC框架中的动态代理就是彻底替换原有方法，直接调用远程方法。
