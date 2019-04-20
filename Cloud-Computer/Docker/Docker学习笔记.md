@@ -3,7 +3,8 @@
 
 [《Docker — 从入门到实践》](https://github.com/yeasy/docker_practice) ，大家看详细版本，可以直接去这里看。
 - 《Docker In Practise》
-- 《Docker IN Action》 
+- 《Docker IN Action》
+
 
 # Docker是什么
 ## 定义
@@ -13,16 +14,16 @@
    >只关心应用程序的话。 启动速度比虚拟机快，迁移更轻量，得益于它的分层文件系统，与其他人分享变更也更简单便捷。非常适合脚本化。
   2. 软件原型
    >快速体验软件，而又避免干扰目前的配置或配备一个虚拟机的麻烦。
-   3. 打包软件
+   1. 打包软件
    >对于Linux用户而言，Docker镜像实际上没有依赖，非常适用于打包软件。
-   4. 让微服务架构成为可能
+   1. 让微服务架构成为可能
    >有助于将一个复杂系统分解成一系列可组合的部分，让用户可以用更加离散的方式划分服务，更加易于管理和可插拔。
-   5. 网络建模
+   1. 网络建模
    >因为一台机器上启动数百个隔离的容器，可以很好的建网络模型做测试。
-   6. 离线时启用全栈生产力
-   7. 降低调试支出
-   8. 文档化软件依赖及接触点
-   9.  启动持续交付
+   1. 离线时启用全栈生产力
+   2. 降低调试支出
+   3. 文档化软件依赖及接触点
+   4.  启动持续交付
    >**更具有可重现性和可复制性**。
 
 ## Docker 镜像
@@ -329,7 +330,18 @@ RUN echo '<h1>Hello, Docker!</h1>' > /usr/share/nginx/html/index.html
    $ docker container logs [container ID or NAMES]
    ```
 ## 终止容器 （docker container stop）
+- `docker container stop` -> 终止容器
 - `docker container ls -a ` -> 可查看到终止容器
 - `docker container start` -> 重新启动终止的容器
 - `docker container restart` -> 将容器终止，然后再启动
    
+## 导出导入容器
+- `docker export 7691a814370e > ubuntu.tar` -> 导出容器
+- `cat ubuntu.tar | docker import - test/ubuntu:v1.0` -> 导入容器
+- `docker import http://example.com/exampleimage.tgz example/imag
+erepo` -> 从url导入容器
+>用户既可以使用 docker load 来导入镜像存储文件到本地镜像库，也可以
+使用 docker import 来导入一个容器快照到本地镜像库。这两者的区别在于容
+器快照文件将丢弃所有的历史记录和元数据信息（即仅保存容器当时的快照状
+态），而镜像存储文件将保存完整记录，体积也要大。此外，从容器快照文件导入
+时可以重新指定标签等元数据信息。
